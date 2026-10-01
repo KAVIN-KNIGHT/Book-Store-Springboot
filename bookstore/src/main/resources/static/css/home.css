@@ -1,0 +1,23 @@
+/* Home page single import - pulls in components needed for home */
+@import url("/css/components/variables.css");
+@import url("/css/components/base.css");
+@import url("/css/components/header.css");
+@import url("/css/components/footer.css");
+@import url("/css/components/buttons.css");
+@import url("/css/components/books.css");
+@import url("/css/components/user-pages.css");
+@import url("/css/components/home-enhanced.css");
+
+/* Page-specific tweaks */
+.hero { /* ensure hero occupies clear band */
+    margin-top: 0;
+}
+
+/* Container max-width adjustment for home */
+.container {
+    max-width: var(--container-xl);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+}

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>About Us - Bookstore</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/components/header.css">
+    <link rel="stylesheet" href="/css/components/footer.css">
+    <link rel="stylesheet" href="/css/components/buttons.css">
+    <link rel="stylesheet" href="/css/components/forms.css">
+    <link rel="stylesheet" href="/css/components/user-pages.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <div th:insert="~{fragments/header :: header}"></div>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-pattern"></div>
+            <div class="container hero-content">
+                <h1 class="hero-title">About Our Bookstore</h1>
+                <p class="hero-subtitle">We're passionate about books and connecting readers with stories they'll love.</p>
+            </div>
+        </section>
+        
+        <!-- Our Story -->
+        <section class="container about-section">
+            <div class="about-grid">
+                <div class="about-content">
+                    <h2>Our Story</h2>
+                    <p>
+                        Founded in 2023, our bookstore began with a simple mission: to create a welcoming space where book lovers could discover their next great read. What started as a small corner shop has grown into a beloved community fixture.
+                    </p>
+                    <p>
+                        We believe in the transformative power of reading. Books open doors to new worlds, perspectives, and possibilities. They inform, entertain, challenge, and inspire us. That's why we're dedicated to curating a thoughtful collection of titles that represent diverse voices and experiences.
+                    </p>
+                    <p>
+                        Our team consists of avid readers who are passionate about helping you find the perfect book. Whether you're searching for a specific title or simply browsing for inspiration, we're here to assist you on your reading journey.
+                    </p>
+                </div>
+                <div class="about-image">
+                    <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80" alt="Bookstore interior">
+                </div>
+            </div>
+        </section>
+        
+        <!-- Our Values -->
+        <section class="container about-section">
+            <h2 class="section-title">Our Values</h2>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <span class="material-icons">diversity_3</span>
+                    </div>
+                    <h3 class="feature-title">Community</h3>
+                    <p class="feature-description">
+                        We believe in fostering connections through literature and creating a space where everyone feels welcome.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <span class="material-icons">diversity_1</span>
+                    </div>
+                    <h3 class="feature-title">Diversity</h3>
+                    <p class="feature-description">
+                        We're committed to offering books that represent a wide range of perspectives, experiences, and voices.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <span class="material-icons">handshake</span>
+                    </div>
+                    <h3 class="feature-title">Service</h3>
+                    <p class="feature-description">
+                        We strive to provide exceptional service, personalized recommendations, and a seamless shopping experience.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <span class="material-icons">eco</span>
+                    </div>
+                    <h3 class="feature-title">Sustainability</h3>
+                    <p class="feature-description">
+                        We're mindful of our environmental impact and take steps to operate in an eco-friendly manner.
+                    </p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Our Team -->
+        <section class="container about-section">
+            <h2 class="section-title">Meet Our Team</h2>
+            
+            <div class="team-grid">
+                <div class="team-member">
+                    <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Team Member" class="team-avatar">
+                    <h3 class="team-name">Emily Chen</h3>
+                    <p class="team-position">Founder & CEO</p>
+                    <p class="team-bio">Book lover with over 15 years of experience in the publishing industry. Passionate about connecting readers with life-changing books.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link">
+                            <span class="material-icons">language</span>
+                        </a>
+                        <a href="#" class="social-link">
+                            <span class="material-icons">alternate_email</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="team-member">
+                    <img src="https://randomuser.me/api/portraits/men/52.jpg" alt="Team Member" class="team-avatar">
+                    <h3 class="team-name">David Johnson</h3>
+                    <p class="team-position">Head of Curation</p>
+                    <p class="team-bio">Literary critic and former bookstore owner who specializes in finding hidden gems and upcoming authors.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link">
+                            <span class="material-icons">language</span>
+                        </a>
+                        <a href="#" class="social-link">
+                            <span class="material-icons">alternate_email</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="team-member">
+                    <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Team Member" class="team-avatar">
+                    <h3 class="team-name">Sarah Williams</h3>
+                    <p class="team-position">Community Manager</p>
+                    <p class="team-bio">Organizes reading groups, author events, and book clubs. Always ready with the perfect book recommendation.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link">
+                            <span class="material-icons">language</span>
+                        </a>
+                        <a href="#" class="social-link">
+                            <span class="material-icons">alternate_email</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="team-member">
+                    <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="Team Member" class="team-avatar">
+                    <h3 class="team-name">Michael Rodriguez</h3>
+                    <p class="team-position">Customer Experience</p>
+                    <p class="team-bio">Ensures every customer has a fantastic experience, whether shopping online or visiting our physical store.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link">
+                            <span class="material-icons">language</span>
+                        </a>
+                        <a href="#" class="social-link">
+                            <span class="material-icons">alternate_email</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Stats -->
+        <section class="stats-section">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">10,000+</div>
+                        <div class="stat-label">Books in Collection</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-value">5,000+</div>
+                        <div class="stat-label">Happy Customers</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-value">200+</div>
+                        <div class="stat-label">Author Events</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-value">15+</div>
+                        <div class="stat-label">Reading Clubs</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- CTA -->
+        <section class="container cta-section">
+            <div class="cta-card">
+                <h2>Start Your Reading Journey Today</h2>
+                <p>Browse our collection and discover your next favorite book.</p>
+                <div class="cta-actions">
+                    <a th:href="@{/books}" class="btn btn-primary btn-lg">Browse Books</a>
+                    <a th:href="@{/contact}" class="btn btn-outline btn-lg">Contact Us</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div th:insert="~{fragments/footer :: footer}"></div>
+    
+    <style>
+        /* Additional styles for about page */
+        .about-section {
+            margin-bottom: var(--space-12);
+        }
+        
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-8);
+            align-items: center;
+        }
+        
+        .about-content h2 {
+            font-size: 1.75rem;
+            color: var(--text-primary);
+            margin-bottom: var(--space-4);
+        }
+        
+        .about-content p {
+            color: var(--text-secondary);
+            margin-bottom: var(--space-4);
+            line-height: 1.6;
+        }
+        
+        .about-image img {
+            width: 100%;
+            height: auto;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .stats-section {
+            background-color: var(--primary-50);
+            padding: var(--space-12) 0;
+            margin-bottom: var(--space-12);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-6);
+            text-align: center;
+        }
+        
+        .stat-card {
+            background-color: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-6);
+            box-shadow: var(--shadow-base);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-600);
+            margin-bottom: var(--space-2);
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+        }
+        
+        .cta-section {
+            margin-bottom: var(--space-12);
+        }
+        
+        .cta-card {
+            background-color: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-8);
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+        }
+        
+        .cta-card h2 {
+            font-size: 1.75rem;
+            color: var(--text-primary);
+            margin-bottom: var(--space-2);
+        }
+        
+        .cta-card p {
+            color: var(--text-secondary);
+            margin-bottom: var(--space-6);
+        }
+        
+        .cta-actions {
+            display: flex;
+            gap: var(--space-4);
+            justify-content: center;
+        }
+        
+        @media (max-width: 768px) {
+            .about-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cta-actions {
+                flex-direction: column;
+                gap: var(--space-4);
+            }
+        }
+    </style>
+</body>
+</html>

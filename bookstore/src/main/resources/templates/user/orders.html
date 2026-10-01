@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>Your Orders - Bookstore</title>
+</head>
+<body>
+	<div th:insert="~{fragments/header :: header}"></div>
+
+	<main>
+		<h1>Your Orders</h1>
+		<div th:if="${orders == null or #lists.isEmpty(orders)}">
+			<p>You have no orders.</p>
+		</div>
+		<ul>
+			<li th:each="order : ${orders}">
+				<div>Order #<span th:text="${order.id}"></span> — <span th:text="${order.createdAt}"></span></div>
+				<ul>
+					<li th:each="item : ${order.items}">
+						<span th:text="${item.book.title}"></span> — Qty: <span th:text="${item.quantity}"></span>
+					</li>
+				</ul>
+			</li>
+		</ul>
+	</main>
+
+	<div th:insert="~{fragments/footer :: footer}"></div>
+</body>
+</html>

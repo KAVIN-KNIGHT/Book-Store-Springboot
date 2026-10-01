@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Books - Bookstore</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/components/variables.css">
+    <link rel="stylesheet" href="/css/components/base.css">
+    <link rel="stylesheet" href="/css/components/header.css">
+    <link rel="stylesheet" href="/css/components/footer.css">
+    <link rel="stylesheet" href="/css/components/buttons.css">
+    <link rel="stylesheet" href="/css/components/forms.css">
+    <link rel="stylesheet" href="/css/components/books.css">
+    <link rel="stylesheet" href="/css/components/user-pages.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+<div th:insert="~{fragments/header :: header}"></div>
+
+<main class="container">
+    <div class="books-header">
+        <div class="books-header-content">
+            <h1>Browse Our Collection</h1>
+            <p>Discover books from all genres and authors</p>
+        </div>
+
+        <div class="books-filters">
+            <!-- 🔍 Search Box -->
+            <form th:action="@{/books/search}" method="get" class="search-box">
+			    <div class="search-container">
+			        <span class="material-icons search-icon">search</span>
+			        <input type="text" id="searchBox" name="query" placeholder="Search books..." 
+			               class="search-input" th:value="${query}" autocomplete="off">
+			        <button type="submit" class="btn btn-primary search-btn">
+			            <span class="material-icons">search</span>
+			        </button>
+			    </div>
+			</form>
+
+
+            <!-- 🔽 Sort & Filter Controls -->
+            <div class="filter-controls">
+                <div class="filter-dropdown">
+                    <button class="btn btn-outline btn-sm dropdown-toggle" id="sortToggle">
+                        <span class="material-icons">sort</span> Sort By
+                    </button>
+                    <div class="dropdown-menu" id="sortMenu">
+                        <a href="#" class="dropdown-item" data-sort="newest">Newest Arrivals</a>
+                        <a href="#" class="dropdown-item" data-sort="low-high">Price: Low to High</a>
+                        <a href="#" class="dropdown-item" data-sort="high-low">Price: High to Low</a>
+                        <a href="#" class="dropdown-item" data-sort="popularity">Popularity</a>
+                        <a href="#" class="dropdown-item" data-sort="rating">Top Rated</a>
+                    </div>
+                </div>
+
+                <div class="filter-dropdown">
+                    <button class="btn btn-outline btn-sm dropdown-toggle" id="filterToggle">
+                        <span class="material-icons">filter_list</span> Filter
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right" id="filterMenu">
+                        <div class="dropdown-header">Categories</div>
+                        <div class="filter-checkboxes">
+                            <label class="checkbox-label"><input type="checkbox" name="category" value="fiction"> Fiction</label>
+                            <label class="checkbox-label"><input type="checkbox" name="category" value="non-fiction"> Non-Fiction</label>
+                            <label class="checkbox-label"><input type="checkbox" name="category" value="sci-fi"> Science Fiction</label>
+                            <label class="checkbox-label"><input type="checkbox" name="category" value="mystery"> Mystery</label>
+                            <label class="checkbox-label"><input type="checkbox" name="category" value="biography"> Biography</label>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-header">Price Range</div>
+                        <div class="price-range">
+                            <input type="range" min="0" max="100" value="50" class="range-slider">
+                            <div class="range-values">
+                                <span>$0</span><span>$100</span>
+                            </div>
+                        </div>
+                        <div class="filter-actions">
+                            <button class="btn btn-sm">Apply Filters</button>
+                            <button class="btn btn-text btn-sm">Reset</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="view-toggle">
+                    <button class="btn-icon active" data-view="grid"><span class="material-icons">grid_view</span></button>
+                    <button class="btn-icon" data-view="list"><span class="material-icons">view_list</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div th:if="${books == null or #lists.isEmpty(books)}" class="empty-state">
+        <span class="material-icons">menu_book</span>
+        <h2>No books available</h2>
+        <p>We're currently updating our inventory. Please check back later.</p>
+    </div>
+
+    <!-- Book Grid View -->
+    <div th:if="${not #lists.isEmpty(books)}" id="book-grid-view" class="book-grid">
+        <div th:each="book : ${books}" class="book-card">
+            <div class="book-card-image">
+                <img th:if="${book.imageUrl}" th:src="${book.imageUrl}" th:alt="${book.title}">
+                <div th:unless="${book.imageUrl}" class="book-card-placeholder">
+                    <span class="material-icons">menu_book</span>
+                </div>
+            </div>
+            <div class="book-card-content">
+                <h3 class="book-title" th:text="${book.title}">Book Title</h3>
+                <p class="book-author" th:text="${book.author}">Author Name</p>
+                <p class="book-description" th:text="${#strings.abbreviate(book.description, 120)}">Book description here...</p>
+                <div class="book-card-footer">
+                    <span class="book-price" th:text="${'$' + #numbers.formatDecimal(book.price, 1, 2)}">$29.99</span>
+                    <form th:action="@{/cart/add}" method="post">
+                        <input type="hidden" name="bookId" th:value="${book.id}">
+                        <input type="hidden" name="qty" value="1">
+                        <button type="submit" class="btn btn-primary">
+                            <span class="material-icons">shopping_cart</span> Add to Cart
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:insert="~{fragments/footer :: footer}"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const gridViewBtn = document.querySelector('[data-view="grid"]');
+    const listViewBtn = document.querySelector('[data-view="list"]');
+    const gridView = document.getElementById('book-grid-view');
+
+    // 🔄 View Toggle
+    gridViewBtn.addEventListener('click', () => {
+        gridView.classList.remove('list-view');
+        gridViewBtn.classList.add('active');
+        listViewBtn.classList.remove('active');
+    });
+    listViewBtn.addEventListener('click', () => {
+        gridView.classList.add('list-view');
+        listViewBtn.classList.add('active');
+        gridViewBtn.classList.remove('active');
+    });
+    
+    const searchBox = document.getElementById('searchBox');
+
+    searchBox.addEventListener('input', function () {
+        const query = this.value.trim();
+
+        if (query.length === 0) {
+            window.location.href = '/books';
+            return;
+        }
+        if (query.length < 2) {
+            return;
+        }
+
+    });
+
+    // ⬇️ Click-toggle dropdowns for Sort & Filter
+    const sortToggle = document.getElementById('sortToggle');
+    const sortMenu = document.getElementById('sortMenu');
+    const filterToggle = document.getElementById('filterToggle');
+    const filterMenu = document.getElementById('filterMenu');
+
+    function toggleMenu(button, menu) {
+        const isVisible = menu.style.display === 'block';
+        document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
+        menu.style.display = isVisible ? 'none' : 'block';
+    }
+
+    sortToggle.addEventListener('click', () => toggleMenu(sortToggle, sortMenu));
+    filterToggle.addEventListener('click', () => toggleMenu(filterToggle, filterMenu));
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.filter-dropdown')) {
+            document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
+        }
+    });
+});
+</script>
+
+
+<style>
+	/* Additional styles for books page */
+	.books-header {
+	  margin-bottom: var(--space-6);
+	}
+	.books-header-content {
+	  margin-bottom: var(--space-4);
+	}
+	.books-header-content h1 {
+	  font-size: 2rem;
+	  color: var(--text-primary);
+	  margin-bottom: var(--space-1);
+	}
+	.books-header-content p {
+	  color: var(--text-secondary);
+	}
+	
+	/* Filters Section */
+	.books-filters {
+	  display: flex;
+	  flex-wrap: wrap;
+	  gap: var(--space-4);
+	  align-items: center;
+	  justify-content: space-between;
+	  margin-bottom: var(--space-4);
+	}
+	.search-box {
+	  flex: 1;
+	  min-width: 200px;
+	}
+	.search-container {
+	  position: relative;
+	}
+	.search-icon {
+	  position: absolute;
+	  left: 12px;
+	  top: 50%;
+	  transform: translateY(-50%);
+	  color: var(--text-secondary);
+	  font-size: 1.25rem;
+	}
+	.search-input {
+	  width: 100%;
+	  padding: 10px 10px 10px 40px;
+	  border-radius: var(--radius-lg);
+	  border: 1px solid var(--border);
+	  font-size: 1rem;
+	  transition: all var(--transition-base);
+	}
+	.search-input:focus {
+	  border-color: var(--primary-400);
+	  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.15);
+	}
+	.search-btn {
+	  position: absolute;
+	  right: 8px;
+	  top: 50%;
+	  transform: translateY(-50%);
+	  border: none;
+	  background: transparent;
+	  color: var(--primary-500);
+	  cursor: pointer;
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	}
+	.search-btn:hover {
+	  color: var(--primary-700);
+	}
+	
+	/* Filter Controls */
+	.filter-controls {
+	  display: flex;
+	  gap: var(--space-2);
+	  align-items: center;
+	}
+	.filter-dropdown {
+	  position: relative;
+	}
+	.dropdown-menu {
+	  position: absolute;
+	  top: 100%;
+	  left: 0;
+	  z-index: 10;
+	  margin-top: var(--space-2);
+	  background-color: var(--surface);
+	  border-radius: var(--radius-md);
+	  box-shadow: var(--shadow-lg);
+	  border: 1px solid var(--border);
+	  min-width: 200px;
+	  display: none;
+	}
+	.dropdown-menu-right {
+	  right: 0;
+	  left: auto;
+	}
+	.dropdown-item {
+	  display: block;
+	  padding: var(--space-2) var(--space-4);
+	  text-decoration: none;
+	  color: var(--text-primary);
+	}
+	.dropdown-item:hover {
+	  background-color: var(--gray-50);
+	}
+	.dropdown-header {
+	  padding: var(--space-2) var(--space-4);
+	  color: var(--text-secondary);
+	  font-weight: 500;
+	  font-size: 0.875rem;
+	}
+	.dropdown-divider {
+	  height: 1px;
+	  background-color: var(--border);
+	  margin: var(--space-2) 0;
+	}
+	.filter-checkboxes {
+	  padding: var(--space-2) var(--space-4);
+	}
+	.checkbox-label {
+	  display: flex;
+	  align-items: center;
+	  gap: var(--space-2);
+	  margin-bottom: var(--space-2);
+	  font-size: 0.875rem;
+	}
+	.price-range {
+	  padding: 0 var(--space-4) var(--space-2);
+	}
+	.range-slider {
+	  width: 100%;
+	  margin-bottom: var(--space-2);
+	}
+	.range-values {
+	  display: flex;
+	  justify-content: space-between;
+	  font-size: 0.75rem;
+	  color: var(--text-secondary);
+	}
+	.filter-actions {
+	  display: flex;
+	  justify-content: space-between;
+	  padding: var(--space-2) var(--space-4);
+	  border-top: 1px solid var(--border);
+	  margin-top: var(--space-2);
+	}
+	.btn-icon {
+	  width: 36px;
+	  height: 36px;
+	  border-radius: var(--radius-md);
+	  border: 1px solid var(--border);
+	  background-color: var(--surface);
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	  cursor: pointer;
+	  color: var(--text-secondary);
+	  transition: all var(--transition-base);
+	}
+	.btn-icon:hover {
+	  border-color: var(--primary-400);
+	  color: var(--primary-600);
+	}
+	.btn-icon.active {
+	  background-color: var(--primary-50);
+	  border-color: var(--primary-400);
+	  color: var(--primary-600);
+	}
+	.view-toggle {
+	  display: flex;
+	  gap: var(--space-1);
+	}
+	
+	/* === Book Grid Container (Default Grid View) === */
+	.book-grid {
+	  display: grid;
+	  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	  gap: 1.5rem;
+	  padding: 1.5rem 2rem;
+	  justify-items: center;
+	}
+	
+	/* === Book Card (Grid View - Default) === */
+	.book-card {
+	  width: 220px;
+	  background: #fff;
+	  border-radius: var(--radius-lg);
+	  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+	  overflow: hidden;
+	  transition: transform 0.2s ease, box-shadow 0.2s ease;
+	}
+	.book-card:hover {
+	  transform: translateY(-5px);
+	  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+	}
+	
+	/* === Book Image Section === */
+	.book-card-image {
+	  position: relative;
+	  width: 100%;
+	  height: 280px;
+	  background-color: #f9f9f9;
+	  display: flex;
+	  justify-content: center;
+	  align-items: center;
+	  overflow: hidden;
+	}
+	.book-card-image img {
+	  width: 100%;
+	  height: 100%;
+	  object-fit: cover;
+	}
+	.book-card-placeholder {
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	  height: 100%;
+	  width: 100%;
+	  color: #aaa;
+	  background: #f4f4f4;
+	}
+	.book-card-placeholder .material-icons {
+	  font-size: 64px;
+	}
+	
+	/* Book Content */
+	.book-card-content {
+	  padding: 0.9rem 1rem 1.2rem;
+	  text-align: center;
+	}
+	.book-title {
+	  font-size: 1rem;
+	  font-weight: 600;
+	  color: #333;
+	  margin-bottom: 0.25rem;
+	}
+	.book-author {
+	  font-size: 0.875rem;
+	  color: #777;
+	  margin-bottom: 0.5rem;
+	}
+	.book-description {
+	  font-size: 0.85rem;
+	  color: #666;
+	  margin-bottom: 0.9rem;
+	  height: 40px;
+	  overflow: hidden;
+	  text-overflow: ellipsis;
+	}
+	
+	/* Footer */
+	.book-card-footer {
+	  display: flex;
+	  align-items: center;
+	  justify-content: space-between;
+	}
+	.book-price {
+	  font-size: 1rem;
+	  font-weight: bold;
+	  color: #1e88e5;
+	}
+	.book-card-footer .btn {
+	  font-size: 0.85rem;
+	  display: flex;
+	  align-items: center;
+	  gap: 4px;
+	  background-color: #1e88e5;
+	  color: #fff;
+	  border: none;
+	  border-radius: var(--radius-md);
+	  padding: 6px 10px;
+	  transition: background 0.2s ease;
+	}
+	.book-card-footer .btn:hover {
+	  background-color: #1565c0;
+	}
+	
+	/* === LIST VIEW STYLES === */
+	/* When .list-view class is added to .book-grid */
+	.book-grid.list-view {
+	  display: flex;
+	  flex-direction: column;
+	  gap: 1.2rem;
+	  padding: 1.5rem 2rem;
+	}
+	
+	.book-grid.list-view .book-card {
+	  width: 100%;
+	  max-width: 100%;
+	  display: flex;
+	  flex-direction: row;
+	  align-items: flex-start;
+	  height: 180px;
+	}
+	
+	.book-grid.list-view .book-card-image {
+	  width: 140px;
+	  height: 100%;
+	  flex-shrink: 0;
+	}
+	
+	.book-grid.list-view .book-card-content {
+	  flex: 1;
+	  text-align: left;
+	  padding: 1rem 1.2rem;
+	  display: flex;
+	  flex-direction: column;
+	  justify-content: space-between;
+	  height: 100%;
+	}
+	
+	.book-grid.list-view .book-title {
+	  font-size: 1.1rem;
+	  margin-bottom: 0.3rem;
+	}
+	
+	.book-grid.list-view .book-author {
+	  font-size: 0.9rem;
+	  margin-bottom: 0.5rem;
+	}
+	
+	.book-grid.list-view .book-description {
+	  height: auto;
+	  max-height: 45px;
+	  margin-bottom: 0.5rem;
+	  overflow: hidden;
+	  line-height: 1.4;
+	}
+	
+	.book-grid.list-view .book-card-footer {
+	  margin-top: auto;
+	}
+	
+	/* Pagination */
+	.pagination {
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	  gap: var(--space-4);
+	  margin-top: var(--space-8);
+	  margin-bottom: var(--space-8);
+	}
+	.pagination-prev, .pagination-next {
+	  display: flex;
+	  align-items: center;
+	  text-decoration: none;
+	  color: var(--text-secondary);
+	  transition: color var(--transition-base);
+	}
+	.pagination-prev:hover, .pagination-next:hover {
+	  color: var(--primary-600);
+	}
+	.pagination-pages {
+	  display: flex;
+	  gap: var(--space-1);
+	}
+	.pagination-page {
+	  width: 36px;
+	  height: 36px;
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	  border-radius: var(--radius-md);
+	  text-decoration: none;
+	  color: var(--text-secondary);
+	  transition: all var(--transition-base);
+	}
+	.pagination-page:hover {
+	  background-color: var(--gray-100);
+	}
+	.pagination-page.active {
+	  background-color: var(--primary-600);
+	  color: white;
+	}
+	
+	/* Responsive adjustments */
+	@media (max-width: 768px) {
+	  .book-grid.list-view .book-card {
+	    flex-direction: column;
+	    align-items: center;
+	  }
+	  .book-grid.list-view .book-card-image {
+	    width: 100%;
+	    height: 280px;
+	  }
+	  .book-grid.list-view .book-card-content {
+	    text-align: center;
+	    width: 100%;
+	  }
+	  .books-filters {
+	    flex-direction: column;
+	    align-items: stretch;
+	  }
+	  .filter-controls {
+	    justify-content: space-between;
+	    flex-wrap: wrap;
+	  }
+	}
+</style>
+</body>
+</html>

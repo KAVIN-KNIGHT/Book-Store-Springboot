@@ -1,0 +1,198 @@
+/* Book Card Styles - Enhanced */
+.book-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-6);
+    margin: var(--space-8) 0;
+}
+
+.book-card {
+    background: var(--surface);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(226, 232, 240, 0.6);
+}
+
+.book-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-primary);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+    transform-origin: left;
+}
+
+.book-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.08);
+    border-color: var(--primary-200);
+}
+
+.book-card:hover::before {
+    transform: scaleX(1);
+}
+
+.book-card-image {
+    position: relative;
+    padding-top: 133%; /* 3:4 aspect ratio */
+    background-color: var(--gray-100);
+    overflow: hidden;
+}
+
+.book-card-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-smooth);
+}
+
+.book-card:hover .book-card-image img {
+    transform: scale(1.05);
+}
+
+.book-card-placeholder {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3rem;
+    color: var(--gray-400);
+}
+
+.book-card-content {
+    padding: var(--space-4);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.book-card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+    line-height: 1.3;
+}
+
+.book-card-author {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-3);
+}
+
+.book-card-description {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-4);
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.book-card-footer {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border);
+}
+
+.book-card-price {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary-600);
+}
+
+.book-card-actions {
+    display: flex;
+    gap: var(--space-2);
+}
+
+/* Book Details */
+.book-details {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: var(--space-8);
+    margin: var(--space-8) 0;
+}
+
+.book-details-image {
+    position: relative;
+    padding-top: 133%;
+    background-color: var(--gray-100);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.book-details-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.book-details-content {
+    padding: var(--space-4);
+}
+
+.book-details-header {
+    margin-bottom: var(--space-6);
+}
+
+.book-details-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+}
+
+.book-details-author {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-4);
+}
+
+.book-details-price {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary-600);
+    margin-bottom: var(--space-6);
+}
+
+.book-details-description {
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin-bottom: var(--space-6);
+}
+
+.book-details-actions {
+    display: flex;
+    gap: var(--space-4);
+}
+
+@media (max-width: 768px) {
+    .book-details {
+        grid-template-columns: 1fr;
+    }
+
+    .book-details-image {
+        padding-top: 100%;
+    }
+}

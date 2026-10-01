@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Orders | Admin</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/components/header.css">
+    <link rel="stylesheet" href="/css/components/footer.css">
+    <link rel="stylesheet" href="/css/components/buttons.css">
+    <link rel="stylesheet" href="/css/components/forms.css">
+    <link rel="stylesheet" href="/css/components/admin.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <div th:insert="~{fragments/header :: header}"></div>
+
+    <main class="container">
+        <div class="admin-dashboard">
+            <h1 class="admin-title">Manage Orders</h1>
+            <p class="admin-subtitle">View and manage customer orders</p>
+
+            <!-- Order Statistics -->
+            <div class="admin-stats">
+                <div class="admin-stat-card">
+                    <div class="stat-icon">
+                        <span class="material-icons">shopping_cart</span>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" th:text="${orders != null ? #lists.size(orders) : 0}">0</div>
+                        <div class="stat-label">Total Orders</div>
+                    </div>
+                </div>
+                
+                <div class="admin-stat-card">
+                    <div class="stat-icon">
+                        <span class="material-icons">pending_actions</span>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" th:text="${pendingOrders != null ? #lists.size(pendingOrders) : 0}">0</div>
+                        <div class="stat-label">Pending Orders</div>
+                    </div>
+                </div>
+                
+                <div class="admin-stat-card">
+                    <div class="stat-icon">
+                        <span class="material-icons">local_shipping</span>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" th:text="${shippedOrders != null ? #lists.size(shippedOrders) : 0}">0</div>
+                        <div class="stat-label">Shipped Orders</div>
+                    </div>
+                </div>
+                
+                <div class="admin-stat-card">
+                    <div class="stat-icon">
+                        <span class="material-icons">done_all</span>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" th:text="${deliveredOrders != null ? #lists.size(deliveredOrders) : 0}">0</div>
+                        <div class="stat-label">Delivered Orders</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order List -->
+            <div class="admin-recent-section">
+                <div class="section-header">
+                    <h2>All Orders</h2>
+                    <div class="search-filter">
+                        <select id="status-filter" class="form-select">
+                            <option value="all">All Orders</option>
+                            <option value="pending">Pending</option>
+                            <option value="shipped">Shipped</option>
+                            <option value="delivered">Delivered</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                        <input type="text" placeholder="Search orders..." class="search-input" />
+                    </div>
+                </div>
+                
+                <div class="admin-table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Date</th>
+                                <th>Customer</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="order : ${orders}" th:attr="data-status=${order.status}">
+                                <td>#<span th:text="${order.id}">12345</span></td>
+                                <td th:text="${#temporals.format(order.createdAt, 'MMM dd, yyyy')}">May 15, 2023</td>
+                                <td th:text="${order.user != null ? order.user.name : 'Guest'}">John Doe</td>
+                                <td>
+                                    <span th:text="${#lists.size(order.items)}">3</span> items
+                                    <a href="#" class="view-details" th:attr="data-order-id=${order.id}">View Details</a>
+                                </td>
+                                <td>$<span th:text="${#numbers.formatDecimal(order.total, 1, 2)}">59.97</span></td>
+                                <td>
+                                    <span th:if="${order.status == 'PENDING'}" class="status-badge status-pending">Pending</span>
+                                    <span th:if="${order.status == 'SHIPPED'}" class="status-badge status-shipped">Shipped</span>
+                                    <span th:if="${order.status == 'DELIVERED'}" class="status-badge status-delivered">Delivered</span>
+                                    <span th:if="${order.status == 'CANCELLED'}" class="status-badge status-cancelled">Cancelled</span>
+                                </td>
+                                <td>
+                                    <div class="table-actions">
+                                        <a th:href="@{/admin/orders/{id}(id=${order.id})}" class="action-icon" title="View Order Details">
+                                            <span class="material-icons">visibility</span>
+                                        </a>
+                                        <div class="action-dropdown">
+                                            <button class="btn-icon dropdown-toggle">
+                                                <span class="material-icons">more_vert</span>
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <a th:href="@{/admin/orders/{id}/update-status(id=${order.id}, status='SHIPPED')}" 
+                                                   th:if="${order.status == 'PENDING'}" class="dropdown-item">
+                                                    <span class="material-icons">local_shipping</span> Mark as Shipped
+                                                </a>
+                                                <a th:href="@{/admin/orders/{id}/update-status(id=${order.id}, status='DELIVERED')}" 
+                                                   th:if="${order.status == 'SHIPPED'}" class="dropdown-item">
+                                                    <span class="material-icons">done_all</span> Mark as Delivered
+                                                </a>
+                                                <a th:href="@{/admin/orders/{id}/update-status(id=${order.id}, status='CANCELLED')}" 
+                                                   th:unless="${order.status == 'DELIVERED' || order.status == 'CANCELLED'}" 
+                                                   class="dropdown-item text-danger">
+                                                    <span class="material-icons">cancel</span> Cancel Order
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- Empty state if no orders -->
+                            <tr th:if="${orders == null or #lists.isEmpty(orders)}">
+                                <td colspan="7" class="empty-state">
+                                    <span class="material-icons">receipt_long</span>
+                                    <p>No orders have been placed yet.</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Details Modal -->
+        <div id="orderDetailsModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Order Details</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="orderDetailsContent">
+                        <!-- Content will be loaded dynamically -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline close-modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:insert="~{fragments/footer :: footer}"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Status filtering
+            const statusFilter = document.getElementById('status-filter');
+            if (statusFilter) {
+                statusFilter.addEventListener('change', function() {
+                    const selectedStatus = this.value.toLowerCase();
+                    const rows = document.querySelectorAll('.admin-table tbody tr[data-status]');
+                    
+                    rows.forEach(row => {
+                        if (selectedStatus === 'all') {
+                            row.style.display = '';
+                        } else {
+                            const rowStatus = row.getAttribute('data-status').toLowerCase();
+                            row.style.display = rowStatus === selectedStatus ? '' : 'none';
+                        }
+                    });
+                });
+            }
+            
+            // Search functionality
+            const searchInput = document.querySelector('.search-input');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const rows = document.querySelectorAll('.admin-table tbody tr:not(.empty-state)');
+                    
+                    rows.forEach(row => {
+                        const orderID = row.cells[0].textContent.toLowerCase();
+                        const customer = row.cells[2].textContent.toLowerCase();
+                        
+                        if (orderID.includes(searchTerm) || customer.includes(searchTerm)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
+            }
+            
+            // Modal functionality
+            const modal = document.getElementById('orderDetailsModal');
+            const viewDetailsLinks = document.querySelectorAll('.view-details');
+            const closeButtons = document.querySelectorAll('.close-modal');
+            
+            // View details click handler
+            viewDetailsLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const orderId = this.getAttribute('data-order-id');
+                    
+                    // In a real application, you would fetch the order details from the server
+                    // For now, we'll just show a mock content
+                    document.getElementById('orderDetailsContent').innerHTML = `
+                        <div class="order-detail-header">
+                            <h3>Order #${orderId}</h3>
+                            <span class="status-badge status-pending">Pending</span>
+                        </div>
+                        <div class="order-detail-info">
+                            <p><strong>Date:</strong> May 15, 2023</p>
+                            <p><strong>Customer:</strong> John Doe</p>
+                            <p><strong>Email:</strong> john.doe@example.com</p>
+                            <p><strong>Shipping Address:</strong> 123 Main St, Anytown, USA</p>
+                        </div>
+                        <table class="order-items-table">
+                            <thead>
+                                <tr>
+                                    <th>Book</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>The Great Gatsby</td>
+                                    <td>$14.99</td>
+                                    <td>1</td>
+                                    <td>$14.99</td>
+                                </tr>
+                                <tr>
+                                    <td>To Kill a Mockingbird</td>
+                                    <td>$12.99</td>
+                                    <td>2</td>
+                                    <td>$25.98</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="text-right"><strong>Subtotal:</strong></td>
+                                    <td>$40.97</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="text-right"><strong>Shipping:</strong></td>
+                                    <td>$5.99</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="text-right"><strong>Total:</strong></td>
+                                    <td>$46.96</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    `;
+                    
+                    modal.style.display = 'block';
+                });
+            });
+            
+            // Close modal
+            closeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                });
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+    </script>
+    
+    <style>
+        /* Additional styles for this page */
+        .search-filter {
+            display: flex;
+            gap: var(--space-4);
+            margin-bottom: var(--space-4);
+        }
+        
+        .form-select {
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background-color: var(--surface);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: var(--space-4);
+        }
+        
+        .view-details {
+            font-size: 0.8125rem;
+            color: var(--primary-600);
+            text-decoration: none;
+            margin-left: var(--space-2);
+        }
+        
+        .view-details:hover {
+            text-decoration: underline;
+        }
+        
+        .table-actions {
+            display: flex;
+            gap: var(--space-2);
+        }
+        
+        .action-icon {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+        
+        .action-icon:hover {
+            color: var(--primary-600);
+        }
+        
+        .action-icon.delete:hover {
+            color: var(--error-600);
+        }
+        
+        .action-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-secondary);
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-icon:hover {
+            color: var(--primary-600);
+        }
+        
+        .dropdown-menu {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            min-width: 180px;
+            z-index: 10;
+            display: none;
+            padding: var(--space-2) 0;
+        }
+        
+        .action-dropdown:hover .dropdown-menu {
+            display: block;
+        }
+        
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-4);
+            text-decoration: none;
+            color: var(--text-primary);
+            white-space: nowrap;
+        }
+        
+        .dropdown-item:hover {
+            background-color: var(--gray-50);
+        }
+        
+        .dropdown-item .material-icons {
+            font-size: 1.125rem;
+        }
+        
+        .dropdown-item.text-danger {
+            color: var(--error-600);
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            overflow: auto;
+        }
+        
+        .modal-content {
+            position: relative;
+            background-color: var(--surface);
+            margin: 10% auto;
+            padding: 0;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            width: 80%;
+            max-width: 800px;
+            animation: modalFadeIn 0.3s;
+        }
+        
+        @keyframes modalFadeIn {
+            from {opacity: 0; transform: translateY(-30px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+        
+        .modal-header {
+            padding: var(--space-6);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            color: var(--text-primary);
+        }
+        
+        .modal-body {
+            padding: var(--space-6);
+        }
+        
+        .modal-footer {
+            padding: var(--space-6);
+            border-top: 1px solid var(--border);
+            text-align: right;
+        }
+        
+        .close-modal {
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .close-modal:hover {
+            color: var(--text-primary);
+        }
+        
+        .order-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-4);
+        }
+        
+        .order-detail-info {
+            margin-bottom: var(--space-6);
+        }
+        
+        .order-items-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .order-items-table th, 
+        .order-items-table td {
+            padding: var(--space-3);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .text-right {
+            text-align: right;
+        }
+        
+        /* Make table scrollable on mobile */
+        .admin-table-responsive {
+            overflow-x: auto;
+        }
+        
+        @media (max-width: 768px) {
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--space-4);
+            }
+            
+            .search-filter {
+                width: 100%;
+            }
+            
+            .search-input,
+            .form-select {
+                flex: 1;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
+        }
+    </style>
+</body>
+</html>

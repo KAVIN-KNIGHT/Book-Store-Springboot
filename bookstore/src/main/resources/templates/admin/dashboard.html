@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+    <title>Admin Dashboard - BookStore</title>
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <main class="container">
+        <div class="admin-dashboard">
+            <h1 class="admin-title">Admin Dashboard</h1>
+            <p class="admin-subtitle">Manage your bookstore from this central dashboard</p>
+
+            <div class="admin-stats">
+                <div class="admin-stat-card">
+                    <div class="stat-icon">📚</div>
+                    <div class="stat-content">
+                        <h3 class="stat-value" th:text="${bookCount != null ? bookCount : '0'}">0</h3>
+                        <p class="stat-label">Total Books</p>
+                    </div>
+                </div>
+                <div class="admin-stat-card">
+                    <div class="stat-icon">🛒</div>
+                    <div class="stat-content">
+                        <h3 class="stat-value" th:text="${orderCount != null ? orderCount : '0'}">0</h3>
+                        <p class="stat-label">Total Orders</p>
+                    </div>
+                </div>
+                <div class="admin-stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-content">
+                        <h3 class="stat-value" th:text="${userCount != null ? userCount : '0'}">0</h3>
+                        <p class="stat-label">Total Users</p>
+                    </div>
+                </div>
+                <div class="admin-stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-content">
+                        <h3 class="stat-value">$<span th:text="${revenue != null ? #numbers.formatDecimal(revenue, 1, 2) : '0.00'}">0.00</span></h3>
+                        <p class="stat-label">Total Revenue</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-quick-actions">
+                <h2>Quick Actions</h2>
+                <div class="admin-action-grid">
+                    <a th:href="@{/admin/manageBooks}" class="admin-action-card">
+                        <div class="action-icon">📚</div>
+                        <h3>Manage Books</h3>
+                        <p>Add, edit, or remove books from your inventory</p>
+                    </a>
+                    <a th:href="@{/admin/manageOrders}" class="admin-action-card">
+                        <div class="action-icon">📦</div>
+                        <h3>Manage Orders</h3>
+                        <p>View and process customer orders</p>
+                    </a>
+                    <a th:href="@{/admin/manageUsers}" class="admin-action-card">
+                        <div class="action-icon">👤</div>
+                        <h3>Manage Users</h3>
+                        <p>View and manage user accounts</p>
+                    </a>
+                    <a th:href="@{/admin/reports}" class="admin-action-card">
+                        <div class="action-icon">📊</div>
+                        <h3>Reports</h3>
+                        <p>View sales and inventory reports</p>
+                    </a>
+                </div>
+            </div>
+
+            <div class="admin-recent-section">
+                <h2>Recent Orders</h2>
+                <div class="recent-orders-table">
+                    <table th:if="${not #lists.isEmpty(recentOrders)}">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Date</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="order : ${recentOrders}">
+                                <td th:text="${'#' + order.id}"></td>
+                                <td th:text="${order.user != null ? order.user.username : 'Guest'}"></td>
+                                <td th:text="${#dates.format(order.createdAt, 'MMM dd, yyyy')}"></td>
+                                <td th:text="${'$' + #numbers.formatDecimal(order.total, 1, 2)}"></td>
+                                <td><span class="status-badge" th:classappend="${'status-' + order.status.toLowerCase()}" th:text="${order.status}"></span></td>
+                                <td><a th:href="@{'/admin/orders/' + ${order.id}}" class="btn btn-sm btn-outline">View</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div th:if="${recentOrders == null or #lists.isEmpty(recentOrders)}" class="empty-state">
+                        <p>No recent orders to display.</p>
+                    </div>
+                </div>
+                <div class="view-all-link">
+                    <a th:href="@{/admin/manageOrders}" class="btn btn-outline">View All Orders</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

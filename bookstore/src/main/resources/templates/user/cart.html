@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Shopping Cart - Bookstore</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/cart-enhanced.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <div th:insert="~{fragments/header :: header}"></div>
+
+    <main class="container">
+        <div class="page-header">
+            <h1>Your Shopping Cart</h1>
+        </div>
+        
+        <!-- Empty Cart State -->
+        <div th:if="${items == null or #lists.isEmpty(items)}" class="cart-empty">
+            <div class="cart-empty-icon">
+                <span class="material-icons">shopping_cart</span>
+            </div>
+            <h2>Your cart is empty</h2>
+            <p>Looks like you haven't added any books to your cart yet.</p>
+            <a th:href="@{/books}" class="btn btn-primary">Browse Books</a>
+        </div>
+        
+        <!-- Cart Contents -->
+        <div th:if="${not #lists.isEmpty(items)}" class="cart-section">
+            <div class="cart-grid">
+                <!-- Cart Items -->
+                <div class="cart-items">
+                    <table class="cart-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="item : ${items}">
+                                <td>
+                                    <div class="cart-product">
+                                        <img th:if="${item.book.imageUrl}" th:src="${item.book.imageUrl}" 
+                                             alt="Book Cover" class="cart-product-image">
+                                        <div th:unless="${item.book.imageUrl}" class="cart-product-placeholder">
+                                            <span class="material-icons">menu_book</span>
+                                        </div>
+                                        <div>
+                                            <div class="cart-product-title" th:text="${item.book.title}">Book Title</div>
+                                            <div class="cart-product-meta" th:text="${'By ' + item.book.author}">By Author Name</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>$<span th:text="${#numbers.formatDecimal(item.book.price, 1, 2)}">19.99</span></td>
+                                <td>
+                                    <div class="cart-quantity">
+                                        <form th:action="@{/cart/update}" method="post" style="display:inline;" class="cart-quantity-form">
+										    <input type="hidden" name="bookId" th:value="${item.book.id}">
+										    <input type="hidden" name="qty" th:value="${item.quantity - 1}">
+										    <button type="submit" class="cart-quantity-btn">-</button>
+										</form>
+										
+										<input type="number" name="qty" th:value="${item.quantity}" style="width:40px" readonly>
+										
+										<form th:action="@{/cart/update}" method="post" style="display:inline;" class="cart-quantity-form">
+										    <input type="hidden" name="bookId" th:value="${item.book.id}">
+										    <input type="hidden" name="qty" th:value="${item.quantity + 1}">
+										    <button type="submit" class="cart-quantity-btn">+</button>
+										</form>
+                                    </div>
+                                </td>
+                                <td>$<span th:text="${#numbers.formatDecimal(item.quantity * item.book.price, 1, 2)}">39.98</span></td>
+                                <td>
+                                    <form th:action="@{/cart/remove}" method="post">
+                                        <input type="hidden" name="bookId" th:value="${item.book.id}">
+                                        <button type="submit" class="cart-remove">
+                                            <span class="material-icons">delete</span>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="cart-actions">
+                        <a th:href="@{/books}" class="btn btn-outline">
+                            <span class="material-icons">arrow_back</span>
+                            Continue Shopping
+                        </a>
+                        <form th:action="@{/cart/clear}" method="post">
+                            <button type="submit" class="btn btn-text">
+                                <span class="material-icons">remove_shopping_cart</span>
+                                Clear Cart
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Cart Summary -->
+                <div class="cart-summary">
+                    <h3>Order Summary</h3>
+                    
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span>$<span th:text="${#numbers.formatDecimal(cartTotal, 1, 2)}">59.97</span></span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span>Shipping</span>
+                        <span>$<span th:text="${#numbers.formatDecimal(shippingCost, 1, 2)}">5.99</span></span>
+                    </div>
+                    
+                    <div class="summary-row" th:if="${discount > 0}">
+                        <span>Discount</span>
+                        <span>-$<span th:text="${#numbers.formatDecimal(discount, 1, 2)}">10.00</span></span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span>Estimated Tax</span>
+                        <span>$<span th:text="${#numbers.formatDecimal(taxAmount, 1, 2)}">6.50</span></span>
+                    </div>
+                    
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span>$<span th:text="${#numbers.formatDecimal(orderTotal, 1, 2)}">62.46</span></span>
+                    </div>
+                    
+                    <div class="promo-code">
+                        <form th:action="@{/cart/apply-promo}" method="post" class="promo-form">
+                            <div class="form-group">
+                                <input type="text" name="promoCode" placeholder="Enter promo code">
+                                <button type="submit" class="btn btn-outline">Apply</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <form th:action="@{/cart/checkout}" method="post">
+                        <button type="submit" class="btn btn-primary checkout-btn">
+                            <span class="material-icons">shopping_bag</span>
+                            Proceed to Checkout
+                        </button>
+                    </form>
+                    
+                    <div class="secure-checkout">
+                        <span class="material-icons">lock</span>
+                        <span>Secure checkout</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- You Might Also Like -->
+            <section class="recommended-section">
+                <h3>You Might Also Like</h3>
+                
+                <div class="book-slider">
+                    <div class="book-card mini" th:each="book : ${recommendedBooks}">
+                        <div class="book-card-image">
+                            <img th:if="${book.imageUrl}" th:src="${book.imageUrl}" th:alt="${book.title}">
+                            <div th:unless="${book.imageUrl}" class="book-card-placeholder">
+                                <span class="material-icons">menu_book</span>
+                            </div>
+                        </div>
+                        <div class="book-card-content">
+                            <h4 class="book-title" th:text="${book.title}">Book Title</h4>
+                            <p class="book-author" th:text="${book.author}">Author Name</p>
+                            <div class="book-card-footer">
+                                <span class="book-price" th:text="${'$' + #numbers.formatDecimal(book.price, 1, 2)}">$29.99</span>
+                                <form th:action="@{/cart/add}" method="post">
+                                    <input type="hidden" name="bookId" th:value="${book.id}">
+                                    <button type="submit" class="btn btn-sm btn-primary">Add</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div th:insert="~{fragments/footer :: footer}"></div>
+    
+    <script>
+    // Quantity Updation Logic with auto-remove on zero
+	    document.addEventListener('DOMContentLoaded', function() {
+	        const quantityInputs = document.querySelectorAll('.cart-quantity-form input[name="qty"]');
+	
+	        quantityInputs.forEach(input => {
+	            input.addEventListener('change', function() {
+	                const form = this.closest('form');
+	                let val = parseInt(this.value, 10);
+	
+	                if (isNaN(val) || val < 0) {
+	                    val = 0;
+	                }
+	
+	                // If quantity is zero, submit to remove endpoint
+	                if (val === 0) {
+	                    const removeForm = document.createElement('form');
+	                    removeForm.method = 'post';
+	                    removeForm.action = '/cart/remove';
+	
+	                    const bookIdInput = document.createElement('input');
+	                    bookIdInput.type = 'hidden';
+	                    bookIdInput.name = 'bookId';
+	                    bookIdInput.value = this.closest('tr').querySelector('input[name="bookId"]').value;
+	
+	                    removeForm.appendChild(bookIdInput);
+	                    document.body.appendChild(removeForm);
+	                    removeForm.submit();
+	                } else {
+	                    // Update quantity normally
+	                    form.submit();
+	                }
+	            });
+	        });
+	    });
+	</script>
+
+    
+    <style>
+        /* Additional styles specific to cart page */
+        .page-header {
+            margin-bottom: var(--space-6);
+        }
+        
+        .page-header h1 {
+            font-size: 2rem;
+            color: var(--text-primary);
+        }
+        
+        .cart-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: var(--space-6);
+            margin-bottom: var(--space-8);
+        }
+        
+        .cart-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: var(--space-4);
+        }
+        
+        .cart-quantity-form {
+            display: flex;
+            align-items: center;
+        }
+        
+        .promo-code {
+            margin-bottom: var(--space-4);
+        }
+        
+        .promo-form .form-group {
+            display: flex;
+        }
+        
+        .promo-form input {
+            flex: 1;
+            border-right: none;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        
+        .promo-form button {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+        
+        .secure-checkout {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-top: var(--space-4);
+        }
+        
+        .secure-checkout .material-icons {
+            font-size: 1rem;
+        }
+        
+        .recommended-section {
+            margin-top: var(--space-8);
+        }
+        
+        .recommended-section h3 {
+            font-size: 1.5rem;
+            margin-bottom: var(--space-4);
+            color: var(--text-primary);
+        }
+        
+        .book-slider {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: var(--space-4);
+        }
+        
+        .book-card.mini {
+            font-size: 0.875rem;
+        }
+        
+        .book-card.mini .book-card-image {
+            height: 160px;
+        }
+        
+        .cart-product-placeholder {
+            width: 50px;
+            height: 70px;
+            background-color: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-500);
+            border-radius: var(--radius-sm);
+        }
+        
+        @media (max-width: 992px) {
+            .cart-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>

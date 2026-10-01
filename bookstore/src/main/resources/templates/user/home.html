@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Welcome - BookStore</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/home.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <div th:insert="~{fragments/header :: header}"></div>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-pattern"></div>
+            <div class="container hero-content">
+                <h1 class="hero-title">Discover Your Next Great Read</h1>
+                <p class="hero-subtitle">Browse our vast collection of books from bestselling authors and emerging voices.</p>
+                <div class="hero-actions">
+                    <a th:href="@{/books}" class="btn btn-primary btn-lg">Browse Books</a>
+                    <a th:href="@{/categories}" class="btn btn-outline btn-lg">View Categories</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Books -->
+        <section class="container">
+            <h2 class="section-title">Featured Books</h2>
+            
+            <div class="book-grid" th:if="${not #lists.isEmpty(featuredBooks)}">
+                <div th:each="book : ${featuredBooks}" class="book-card">
+                    <div class="book-card-image">
+                        <span class="book-badge">Featured</span>
+                        <img th:if="${book.imageUrl}" th:src="${book.imageUrl}" th:alt="${book.title}">
+                        <div th:unless="${book.imageUrl}" class="book-card-placeholder">
+                            <span class="material-icons">menu_book</span>
+                        </div>
+                    </div>
+                    <div class="book-card-content">
+                        <h3 class="book-title" th:text="${book.title}">Book Title</h3>
+                        <p class="book-author" th:text="${book.author}">Author Name</p>
+                        <div class="book-rating">
+                            <span class="material-icons">star</span>
+                            <span class="material-icons">star</span>
+                            <span class="material-icons">star</span>
+                            <span class="material-icons">star</span>
+                            <span class="material-icons">star_half</span>
+                            <span class="rating-count">(42)</span>
+                        </div>
+                        <p class="book-description" th:text="${#strings.abbreviate(book.description, 120)}">Book description here...</p>
+                        <div class="book-card-footer">
+                            <span class="book-price" th:text="${'$' + #numbers.formatDecimal(book.price, 1, 2)}">$29.99</span>
+                            <form th:action="@{/cart/add}" method="post">
+                                <input type="hidden" name="bookId" th:value="${book.id}">
+                                <button type="submit" class="btn btn-primary">
+                                    <span class="material-icons">shopping_cart</span>
+                                    Add to Cart
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${featuredBooks == null or #lists.isEmpty(featuredBooks)}" class="empty-state">
+                    <span class="material-icons">menu_book</span>
+                    <p>No featured books available at the moment.</p>
+                </div>
+            </div>
+            
+            <div class="view-all-button">
+                <a th:href="@{/books}" class="btn btn-outline">View All Books</a>
+            </div>
+        </section>
+
+        <!-- Categories -->
+        <section class="container categories">
+            <h2 class="section-title">Browse Categories</h2>
+            
+            <div class="categories-grid">
+                <a href="#" class="category-card" th:each="category : ${categories}" 
+                   th:style="${category.imageUrl != null} ? 'background-image: url(' + ${category.imageUrl} + ');' : ''">
+                    <span class="category-title" th:text="${category.name}">Category Name</span>
+                </a>
+                
+                <!-- Fallback categories if none provided -->
+                <a href="#" class="category-card" th:if="${categories == null or #lists.isEmpty(categories)}" 
+                   style="background-image: url('https://images.unsplash.com/photo-1519682337058-a94d519337bc');">
+                    <span class="category-title">Fiction</span>
+                </a>
+                <a href="#" class="category-card" th:if="${categories == null or #lists.isEmpty(categories)}" 
+                   style="background-image: url('https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0');">
+                    <span class="category-title">Non-Fiction</span>
+                </a>
+                <a href="#" class="category-card" th:if="${categories == null or #lists.isEmpty(categories)}" 
+                   style="background-image: url('https://images.unsplash.com/photo-1533073526757-2c8ca1df9f1c');">
+                    <span class="category-title">Sci-Fi & Fantasy</span>
+                </a>
+                <a href="#" class="category-card" th:if="${categories == null or #lists.isEmpty(categories)}" 
+                   style="background-image: url('https://images.unsplash.com/photo-1485846147915-69f12fbd03b9');">
+                    <span class="category-title">Biography</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="container features">
+            <h2 class="section-title">Why Shop With Us</h2>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <span class="material-icons">local_shipping</span>
+                    </div>
+                    <h3 class="feature-title">Fast Delivery</h3>
+                    <p class="feature-description">Get your books delivered to your doorstep in as little as 48 hours.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <span class="material-icons">verified</span>
+                    </div>
+                    <h3 class="feature-title">Quality Guaranteed</h3>
+                    <p class="feature-description">All books are carefully inspected before shipping to ensure top quality.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <span class="material-icons">price_check</span>
+                    </div>
+                    <h3 class="feature-title">Best Prices</h3>
+                    <p class="feature-description">We offer competitive prices and regular discounts on bestsellers.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section class="testimonials">
+            <div class="container">
+                <h2 class="section-title">What Our Customers Say</h2>
+                
+                <div class="testimonial-grid">
+                    <div class="testimonial-card">
+                        <div class="testimonial-content">
+                            <p>"BookStore has been my go-to for books for the past year. Their selection is amazing and delivery is always prompt."</p>
+                        </div>
+                        <div class="testimonial-author">
+                            <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Customer" class="author-avatar">
+                            <div class="author-info">
+                                <div class="author-name">Sarah Johnson</div>
+                                <div class="author-title">Avid Reader</div>
+                            </div>
+                        </div>
+                        <div class="testimonial-rating">★★★★★</div>
+                    </div>
+                    
+                    <div class="testimonial-card">
+                        <div class="testimonial-content">
+                            <p>"I love their customer service! When my order had an issue, they resolved it immediately and even sent a free bookmark."</p>
+                        </div>
+                        <div class="testimonial-author">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Customer" class="author-avatar">
+                            <div class="author-info">
+                                <div class="author-name">Michael Chen</div>
+                                <div class="author-title">Book Collector</div>
+                            </div>
+                        </div>
+                        <div class="testimonial-rating">★★★★★</div>
+                    </div>
+                    
+                    <div class="testimonial-card">
+                        <div class="testimonial-content">
+                            <p>"Their recommendation system is spot on! I've discovered so many great authors I might have otherwise missed."</p>
+                        </div>
+                        <div class="testimonial-author">
+                            <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="Customer" class="author-avatar">
+                            <div class="author-info">
+                                <div class="author-name">Emily Rodriguez</div>
+                                <div class="author-title">Literature Professor</div>
+                            </div>
+                        </div>
+                        <div class="testimonial-rating">★★★★★</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Newsletter -->
+        <section class="container newsletter">
+            <h2 class="newsletter-title">Stay Updated</h2>
+            <p class="newsletter-subtitle">Subscribe to our newsletter for new releases, reading lists, and exclusive offers!</p>
+            
+            <form class="newsletter-form" th:action="@{/newsletter/subscribe}" method="post">
+                <input type="email" class="newsletter-input" name="email" placeholder="Enter your email address" required>
+                <button type="submit" class="newsletter-btn">Subscribe</button>
+            </form>
+        </section>
+    </main>
+
+    <div th:insert="~{fragments/footer :: footer}"></div>
+    
+    <script>
+        // Simple animation for feature cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const featureCards = document.querySelectorAll('.feature-card');
+            
+            featureCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add('animated');
+                }, 300 * index);
+            });
+        });
+    </script>
+    
+    <style>
+        /* Additional animations */
+        .feature-card {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .feature-card.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .view-all-button {
+            text-align: center;
+            margin-top: var(--space-8);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: var(--space-12);
+            color: var(--text-secondary);
+        }
+        
+        .empty-state .material-icons {
+            font-size: 3rem;
+            margin-bottom: var(--space-4);
+            color: var(--gray-300);
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>Checkout - Bookstore</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/css/components/variables.css">
+	<link rel="stylesheet" href="/css/components/base.css">
+	<link rel="stylesheet" href="/css/components/header.css">
+	<link rel="stylesheet" href="/css/components/footer.css">
+	<link rel="stylesheet" href="/css/components/buttons.css">
+	<link rel="stylesheet" href="/css/components/forms.css">
+	<link rel="stylesheet" href="/css/components/user-pages.css">
+</head>
+<body>
+	<div th:insert="~{fragments/header :: header}"></div>
+
+	<main class="container">
+		<div class="page-header">
+			<h1>Thank you for your order</h1>
+		</div>
+		<section class="order-complete">
+			<p>Your order has been placed successfully. We've emailed your order confirmation and receipt.</p>
+			<p><a th:href="@{/books}" class="btn btn-primary">Continue shopping</a></p>
+		</section>
+	</main>
+
+	<div th:insert="~{fragments/footer :: footer}"></div>
+</body>
+</html>

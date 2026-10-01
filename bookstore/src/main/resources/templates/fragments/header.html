@@ -1,0 +1,40 @@
+<th:block th:fragment="head" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} ? ${title} + ' - BookStore' : 'BookStore'">BookStore</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script defer th:src="@{/js/script.js}"></script>
+</th:block>
+    
+    <header th:fragment="header" class="site-header">
+        <div class="header-container">
+            <div class="brand">
+                <a th:href="@{/}" class="logo">📚 BookStore</a>
+            </div>
+
+            <nav class="nav-menu">
+                <a th:href="@{/books}" class="nav-link">Browse Books</a>
+                <a th:href="@{/about}" class="nav-link">About</a>
+                <a th:href="@{/contact}" class="nav-link">Contact</a>
+            </nav>
+
+            <div class="header-actions">
+                <div sec:authorize="!isAuthenticated()">
+                    <a th:href="@{/login}" class="btn btn-primary btn-sm">Login</a>
+                    <a th:href="@{/register}" class="btn btn-outline btn-sm">Register</a>
+                </div>
+
+                <div sec:authorize="isAuthenticated()">
+                    <a th:href="@{/cart}" class="nav-link">Cart</a>
+                    <a th:href="@{/orders}" class="nav-link">Orders</a>
+                    <div sec:authorize="hasRole('ADMIN')">
+                        <a th:href="@{/admin}" class="nav-link">Admin</a>
+                    </div>
+                    <form th:action="@{/logout}" method="post" style="display: inline;">
+                        <button type="submit" class="btn btn-outline btn-sm">Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </header>
+<!-- header fragment only: no outer html/body so it can be included safely -->

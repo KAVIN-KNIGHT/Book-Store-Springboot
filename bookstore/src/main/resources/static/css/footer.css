@@ -1,0 +1,23 @@
+@import url('/css/components/variables.css');
+
+.footer {
+    background-color: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: var(--space-12) 0;
+}
+
+.footer .footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--space-6);
+}
+
+.footer .footer-section h3,
+.footer .footer-section h4 {
+    color: var(--primary-600);
+}
+
+.footer a { color: var(--text-secondary); }
+.footer a:hover { color: var(--primary-600); }
+
+.footer-bottom { text-align:center; padding-top: var(--space-6); border-top: 1px solid var(--border); }

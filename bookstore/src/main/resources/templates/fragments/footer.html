@@ -1,0 +1,29 @@
+<footer th:fragment="footer" class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>BookStore</h3>
+                <p>Your one-stop destination for quality books.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a th:href="@{/books}">Browse Books</a></li>
+                    <li><a th:href="@{/about}">About Us</a></li>
+                    <li><a th:href="@{/contact}">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Customer Service</h4>
+                <ul>
+                    <li><a th:href="@{/faq}">FAQ</a></li>
+                    <li><a th:href="@{/shipping}">Shipping Info</a></li>
+                    <li><a th:href="@{/returns}">Returns Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; <span th:text="${#dates.format(#dates.createNow(),'yyyy')}"></span> BookStore. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
