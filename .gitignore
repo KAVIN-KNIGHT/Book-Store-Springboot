@@ -1,0 +1,34 @@
+# Target build output
+target/
+**/target/
+*.jar
+*.war
+*.ear
+
+# Maven Wrapper JAR (optional to commit, usually ignored if wrapper script is present)
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# IDE & Editor files
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.classpath
+.project
+.settings/
+.apt_generated
+.factorypath
+.springBeans
+.sts4-cache
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs & Temp files
+*.log
+*.tmp
+*.bak
